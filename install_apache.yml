@@ -2,39 +2,24 @@
 - hosts: all
   become: true
   tasks:
-    - name: Update repository index (Debian/Ubuntu)
-      apt:
+
+    - name: Install Apache and PHP packages for Ubuntu Server
+      package:
+        name: 
+           - apache2
+           - libapache2-mod-php
+        state: latest
         update_cache: yes
-      when: ansible_distribution in ["Debian", "Ubuntu"]
+      when: ansible_distribution == "Ubuntu"
 
-    - name: Install Apache (Debian/Ubuntu)
-      apt:
-        name: apache2
+ - name: Install Apache and PHP packages for Almalinux Server
+      package:
+        name:
+           - httpd
+           - php
         state: latest
-      when: ansible_distribution in ["Debian", "Ubuntu"]
-
-    - name: Add PHP support for Apache (Debian/Ubuntu)
-      apt:
-        name: libapache2-mod-php
-        state: latest
-      when: ansible_distribution in ["Debian", "Ubuntu"]
-
-    - name: Update repository index (AlmaLinux/CentOS)
-      dnf:
         update_cache: yes
-      when: ansible_distribution in ["AlmaLinux", "CentOS"]
-
-    - name: Install Apache (AlmaLinux/CentOS)
-      dnf:
-        name: httpd
-        state: latest
-      when: ansible_distribution in ["AlmaLinux", "CentOS"]
-
-    - name: Add PHP support for Apache (AlmaLinux/CentOS)
-      dnf:
-        name: php
-        state: latest
-      when: ansible_distribution in ["AlmaLinux", "CentOS"]
+      when: ansible_distribution == "Almalinux"
 
     - name: Ensure firewalld is installed (AlmaLinux/CentOS)
       dnf:
