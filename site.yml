@@ -1,0 +1,114 @@
+---
+
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: install updates (AlmaLinux)
+    tags: always
+    dnf: 
+       update_only: yes
+       update_cache: yes
+    when: ansible_distribution == "Almalinux"
+
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+        upgrade: dist
+        update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: web_servers
+  become: true
+  tasks: 
+
+  - name: Install httpd server and PHP on (AlmaLinux Servers)
+    tags: httpd,apache,almalinux
+    dnf: 
+      name:
+           - httpd
+           - php
+      state: latest
+    when: ansible_distribution == "Almalinux"
+
+  - name: Install Apache and PHP packages for (Ubuntu Servers)
+    tags: apache2,apache,Ubuntu
+    apt:
+      name: 
+           - apache2
+           - libapache2-mod-php
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: db_servers
+  become: true 
+  tasks: 
+
+  - name: install mariadb package (AlmaLinux)
+    tags: mariadb,almalinux,db
+    dnf: 
+       name: mariadb
+       state: latest
+    when: ansible_distribution == "AlmaLinux"
+
+  - name: install mariadb package (Ubuntu)
+    tags: mariadb-server,ubuntu,db
+    apt: 
+       name: mariadb-server
+       state: latest 
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: file_servers
+  become: true
+  tasks:
+
+  - name: install samba package
+    tags: samba
+    package: 
+      name: samba
+
+  - name: Install Apache and PHP packages for Almalinux Server
+    dnf:
+      name:
+           - httpd
+           - php
+      state: latest
+    when: ansible_distribution == "Almalinux"
+
+  - name: Ensure firewalld is installed (AlmaLinux/CentOS)
+    dnf:
+        name: firewalld
+        state: present
+    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+
+  - name: Ensure firewalld is running (AlmaLinux/CentOS)
+    service:
+        name: firewalld
+        state: started
+        enabled: true
+    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+
+  - name: Allow HTTP service through firewall (AlmaLinux/CentOS)
+    firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+
+  - name: Start and enable Apache (httpd) (AlmaLinux/CentOS)
+    service:
+        name: httpd
+        state: started
+        enabled: true
+    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+    
+  - name: Verify Apache is listening on port 80
+    shell: ss -lntp | grep :80
+    register: apache_port
+    changed_when: false
+    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+
+  - debug: 
+      var: apache_port.stdout
