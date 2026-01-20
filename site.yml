@@ -1,17 +1,19 @@
 ---
 
-
 - hosts: almalinux
   become: true
   tasks:
 
-  - name: install text editor VIM (AlmaLinux)
+  - name: install text editor VIM and epel and htop (AlmaLinux)
     tags: almalinux
     dnf:
-       name: vim-enhanced
+       name: 
+           - vim-enhanced
+           - epel-release.noarch
+           - htop
        state: latest
-    when: ansible_distribution == "almalinux"
-
+    when: ansible_distribution == "AlmaLinux"
+  
 - hosts: all
   become: true
   pre_tasks:
@@ -66,7 +68,23 @@
            - libapache2-mod-php
       state: latest
     when: ansible_distribution == "Ubuntu"
-   
+ 
+  - name: change e-mail address for admin
+    tags: apache,centos,httpd
+    lineinfile: 
+       path: /etc/httpd/conf/httpd.conf
+       regexp: '^Serveradmin'
+       line: ServerAdmin testinglinechangeonansible@homelab.com
+    when: ansible_distribution == "AlmaLinux"
+    register: httpd
+
+  - name: restart httpd (AlmaLinx)
+    tags: apache,httpd,almalinux
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed 
+
   - name: copy default html html files for site
     tags: apache,apache2,httpd
     copy:
