@@ -1,0 +1,57 @@
+---
+
+- hosts: almalinux
+  become: true
+  tasks:
+
+  - name: install text editor VIM and epel and htop (AlmaLinux)
+    tags: almalinux
+    dnf:
+       name: 
+           - vim-enhanced
+           - epel-release.noarch
+           - htop
+       state: latest
+    when: ansible_distribution == "AlmaLinux"
+  
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: install updates (AlmaLinux)
+    dnf: 
+       update_only: yes
+       update_cache: yes
+    when: ansible_distribution == "Almalinux"
+
+  - name: install updates (Ubuntu)
+    apt:
+        upgrade: dist
+        update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+  
+  - name: create user fat
+    tags: always
+    user:
+       name: fat
+       group: root
+  
+  - name: add ssh key for fat
+    tags: always
+    authorized_key:
+      user: fat
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQOgHVbk8BNQAKgjQS5AMF3qtCZw+WgFcLNWQCNPCO7 ansible"
+
+  - name: add suders file for fat
+    tags: always
+    copy: 
+      src: sudoer_fat
+      dest: /etc/sudoers.d/fat
+      owner: root
+      group: root
+      mode: 0440
+

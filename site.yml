@@ -18,17 +18,28 @@
   become: true
   pre_tasks:
 
-  - name: install updates (AlmaLinux)
+  - name: updates repo (AlmaLinux)
     dnf: 
-       update_only: yes
-       update_cache: yes
+        update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Almalinux"
 
-  - name: install updates (Ubuntu)
+  - name: updates repo (Ubuntu)
     apt:
         upgrade: dist
         update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+ 
+  - name: add ssh key for fat
+    tags: always
+    authorized_key:
+      user: fat
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQOgHVbk8BNQAKgjQS5AMF3qtCZw+WgFcLNWQCNPCO7 ansible"
 
 - hosts: workstations 
   become: true
