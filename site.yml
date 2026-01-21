@@ -1,178 +1,45 @@
 ---
+ 
 
-- hosts: almalinux
-  become: true
-  tasks:
-
-  - name: install text editor VIM and epel and htop (AlmaLinux)
-    tags: almalinux
-    dnf:
-       name: 
-           - vim-enhanced
-           - epel-release.noarch
-           - htop
-       state: latest
-    when: ansible_distribution == "AlmaLinux"
-  
 - hosts: all
   become: true
   pre_tasks:
-
-  - name: updates repo (AlmaLinux)
-    dnf: 
-        update_cache: yes
-    changed_when: false
-    when: ansible_distribution == "Almalinux"
-
-  - name: updates repo (Ubuntu)
-    apt:
-        upgrade: dist
-        update_cache: yes
-    changed_when: false
-    when: ansible_distribution == "Ubuntu"
-
+  
+   - name: update repository index (CentOS)
+     tags: always
+     dnf:
+       update_cache: yes
+     changed_when: false
+     when: ansible_distribution == "CentOS"
+ 
+   - name: update repository index (Ubuntu)
+     tags: always
+     apt:
+       update_cache: yes
+     changed_when: false
+     when: ansible_distribution == "Ubuntu"
+ 
 - hosts: all
   become: true
-  tasks:
- 
-  - name: add ssh key for fat
-    tags: always
-    authorized_key:
-      user: fat
-      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQOgHVbk8BNQAKgjQS5AMF3qtCZw+WgFcLNWQCNPCO7 ansible"
-
-- hosts: workstations 
+  roles:
+     - base
+    
+- hosts: workstations
   become: true
-  tasks: 
-
-  - name: install unzip
-    package: 
-      name: unzip
-
-  - name: install terraform
-    unarchive:
-      src: https://releases.hashicorp.com/terraform/1.14.3/terraform_1.14.3_linux_amd64.zip
-      dest: /usr/local/bin
-      remote_src: yes
-      mode: 0755
-      owner: root
-      group: root
-
+  roles:
+     - workstations
+ 
 - hosts: web_servers
   become: true
-  tasks: 
-
-  - name: Install httpd server and PHP on (AlmaLinux Servers)
-    tags: httpd,apache,almalinux
-    dnf: 
-      name:
-           - httpd
-           - php
-      state: latest
-    when: ansible_distribution == "Almalinux"
-
-  - name: Install Apache and PHP packages for (Ubuntu Servers)
-    tags: apache2,apache,Ubuntu
-    apt:
-      name: 
-           - apache2
-           - libapache2-mod-php
-      state: latest
-    when: ansible_distribution == "Ubuntu"
+  roles:
+     - web_servers
  
-  - name: change e-mail address for admin
-    tags: apache,centos,httpd
-    lineinfile: 
-       path: /etc/httpd/conf/httpd.conf
-       regexp: '^Serveradmin'
-       line: ServerAdmin testinglinechangeonansible@homelab.com
-    when: ansible_distribution == "AlmaLinux"
-    register: httpd
-
-  - name: restart httpd (AlmaLinx)
-    tags: apache,httpd,almalinux
-    service:
-      name: httpd
-      state: restarted
-    when: httpd.changed 
-
-  - name: copy default html html files for site
-    tags: apache,apache2,httpd
-    copy:
-      src: default_site.html
-      dest: /var/www/html/index.html
-      owner: root 
-      group: root
-      mode: 0644
-
 - hosts: db_servers
-  become: true 
-  tasks: 
-
-  - name: install mariadb package (AlmaLinux)
-    tags: mariadb,almalinux,db
-    dnf: 
-       name: mariadb
-       state: latest
-    when: ansible_distribution == "AlmaLinux"
-
-  - name: install mariadb package (Ubuntu)
-    tags: mariadb-server,ubuntu,db
-    apt: 
-       name: mariadb-server
-       state: latest 
-    when: ansible_distribution == "Ubuntu"
-
+  become: true
+  roles:
+     - db_servers
+ 
 - hosts: file_servers
   become: true
-  tasks:
-
-  - name: install samba package
-    tags: samba
-    package: 
-      name: samba
-
-  - name: Install Apache and PHP packages for Almalinux Server
-    dnf:
-      name:
-           - httpd
-           - php
-      state: latest
-    when: ansible_distribution == "Almalinux"
-
-  - name: Ensure firewalld is installed (AlmaLinux/CentOS)
-    dnf:
-        name: firewalld
-        state: present
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
-
-  - name: Ensure firewalld is running (AlmaLinux/CentOS)
-    service:
-        name: firewalld
-        state: started
-        enabled: true
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
-
-  - name: Allow HTTP service through firewall (AlmaLinux/CentOS)
-    firewalld:
-        service: http
-        permanent: true
-        state: enabled
-        immediate: true
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
-
-  - name: Start and enable Apache (httpd) (AlmaLinux/CentOS)
-    service:
-        name: httpd
-        state: started
-        enabled: true
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
-    
-  - name: Verify Apache is listening on port 80
-    shell: ss -lntp | grep :80
-    register: apache_port
-    changed_when: false
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
-
-  - debug: 
-      var: apache_port.stdout
+  roles:
+     - file_servers
