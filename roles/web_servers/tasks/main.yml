@@ -1,9 +1,9 @@
   - name: Install Apache and PHP packages for (Ubuntu Servers)
     tags: apache2,apache,Ubuntu
-    apt:
+    package:
       name: 
-           - apache2
-           - libapache2-mod-php
+           - "{{ apache_package_name }}"
+           - "{{ php_package_name }}"
       state: latest
     when: ansible_distribution == "Ubuntu"
  
@@ -12,16 +12,9 @@
     lineinfile: 
        path: /etc/httpd/conf/httpd.conf
        regexp: '^Serveradmin'
-       line: ServerAdmin testinglinechangeonansible@homelab.com
+       line: ServerAdmin testingagainlinechangeonansible@homelab.net
     when: ansible_distribution == "AlmaLinux"
-    register: httpd
-
-  - name: restart httpd (AlmaLinx)
-    tags: apache,httpd,almalinux
-    service:
-      name: httpd
-      state: restarted
-    when: httpd.changed 
+    notify: restart_apache
 
   - name: copy default html html files for site
     tags: apache,apache2,httpd
