@@ -35,7 +35,7 @@ Include /etc/ssh/sshd_config.d/*.conf
 #LogLevel INFO
 
 # Authentication:
-
+AllowUsers {{ ssh_users }}
 #LoginGraceTime 2m
 #PermitRootLogin prohibit-password
 #StrictModes yes
