@@ -1,0 +1,8 @@
+solr_java_package: "openjdk-17-jre-headless"
+
+solr_prereq_packages:
+  - "{{ solr_java_package }}"
+  - tar
+  - unzip
+  - ca-certificates
+ssh_service_name: ssh

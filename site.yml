@@ -1,23 +1,26 @@
 ---
- 
+
 
 - hosts: all
   become: true
-  pre_tasks:
-  
-   - name: update repository index (CentOS)
-     tags: always
-     dnf:
+  tasks:
+   
+  - name: update repository index (AlmaLinux)
+    tags: always
+    dnf:
        update_cache: yes
-     changed_when: false
-     when: ansible_distribution == "CentOS"
+    changed_when: false
+    when: ansible_distribution == "AlmaLinux"
  
-   - name: update repository index (Ubuntu)
-     tags: always
-     apt:
+  - name: update repository index (Ubuntu)
+    tags: always
+    apt:
        update_cache: yes
-     changed_when: false
-     when: ansible_distribution == "Ubuntu"
+    changed_when: false
+    when: ansible_distribution == "Ubuntu"
+
+  roles:
+   - base 
  
 - hosts: all
   become: true
@@ -43,3 +46,8 @@
   become: true
   roles:
      - file_servers
+
+- hosts: solr_servers
+  become: true
+  roles:
+     - solr

@@ -1,0 +1,8 @@
+- name: Deploy solr.in.sh
+  ansible.builtin.template:
+    src: solr.in.sh.j2
+    dest: "{{ solr_current_link }}/bin/solr.in.sh"
+    owner: "{{ solr_user }}"
+    group: "{{ solr_group }}"
+    mode: "0644"
+  notify: Restart solr

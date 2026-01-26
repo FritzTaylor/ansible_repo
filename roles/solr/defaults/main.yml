@@ -1,0 +1,40 @@
+solr_base_dir: "/opt/solr"
+solr_install_dir: "{{ solr_base_dir }}/solr-{{ solr_version }}"
+solr_current_link: "{{ solr_base_dir }}/current"
+solr_download_dir: "/opt/src"
+
+solr_user: "solr"
+solr_group: "solr"
+
+solr_home: "/var/solr"
+solr_logs_dir: "/var/log/solr"
+
+solr_gc_opts: "-XX:+UseG1GC"
+solr_limit_nofile: 65000
+solr_port: 8983
+# JVM heap (Solr startup)
+solr_xms: 512m
+solr_xmx: 512m
+
+# roles/solr/defaults/main.yml
+
+solr_port: "8983"
+
+# bind/advertise host
+solr_bind_host: "{{ ansible_default_ipv4.address | default(inventory_hostname) }}"
+
+solr_in_sh_candidates:
+  - /etc/default/solr.in.sh
+  - /etc/solr/solr.in.sh
+  - /opt/solr/bin/solr.in.sh
+
+# Version + download naming
+solr_version: "9.10.1"
+solr_flavor: ""   # leave blank unless you intentionally use a flavor suffix
+
+solr_filename: "solr-{{ solr_version }}{% if solr_flavor | length > 0 %}-{{ solr_flavor }}{% endif %}.tgz"
+solr_base_url: "https://downloads.apache.org/solr/solr"
+solr_url: "{{ solr_base_url }}/{{ solr_version }}/{{ solr_filename }}"
+
+# Optional checksum (set to empty to skip verification)
+solr_sha512: "23915ba0c9eba81d9ed7dd46bf3dfa748a1cf12cfd1d2bc3c37e3022893b8d45a6d6dc078ee79e33c0367191c3e4f2d1df3c6f5705331ccfe13d6b1287812eb0"

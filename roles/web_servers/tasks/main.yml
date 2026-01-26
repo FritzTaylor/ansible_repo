@@ -32,7 +32,7 @@
            - php
      state: latest
     when: ansible_distribution == "Almalinux"
-
+  
   - name: Ensure firewalld is installed (AlmaLinux/CentOS)
     dnf:
         name: firewalld

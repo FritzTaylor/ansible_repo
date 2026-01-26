@@ -1,0 +1,13 @@
+- name: install package tree (Debian family)
+  tags: always
+  apt:
+     name: tree
+     state: latest 
+  when: ansible_os_family == "Debian"
+
+- name: install package tree (AlmaLinux family)
+  tags: always
+  dnf: 
+     name: tree
+     state: latest
+  when: ansible_os_family == "RedHat"

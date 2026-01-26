@@ -1,0 +1,33 @@
+#- name: Load OS-specific prereq package list
+#  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install prerequisite packages (from group_vars per OS)
+  ansible.builtin.package:
+    name: "{{ solr_prereq_packages }}"
+    state: present
+
+- name: Ensure solr group exists
+  ansible.builtin.group:
+    name: "{{ solr_group }}"
+    system: true
+
+- name: Ensure solr user exists
+  ansible.builtin.user:
+    name: "{{ solr_user }}"
+    group: "{{ solr_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+    create_home: false
+
+- name: Create directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ solr_user }}"
+    group: "{{ solr_group }}"
+    mode: "0755"
+  loop:
+    - "{{ solr_base_dir }}"
+    - "{{ solr_download_dir }}"
+    - "{{ solr_home }}"
+    - "{{ solr_logs_dir }}"

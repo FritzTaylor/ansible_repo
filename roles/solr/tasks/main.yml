@@ -1,0 +1,7 @@
+- ansible.builtin.import_tasks: prereqs.yml
+- ansible.builtin.import_tasks: download.yml
+- ansible.builtin.import_tasks: install.yml
+- ansible.builtin.import_tasks: configure.yml
+- ansible.builtin.import_tasks: service.yml
+- ansible.builtin.import_tasks: solr_binding.yml
+  when: "'solr_servers' in group_names"

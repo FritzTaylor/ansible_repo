@@ -1,0 +1,21 @@
+- name: Extract Solr into base dir
+  ansible.builtin.unarchive:
+    src: "{{ solr_download_dir }}/{{ solr_filename }}"
+    dest: "{{ solr_base_dir }}"
+    remote_src: true
+    creates: "{{ solr_install_dir }}/bin/solr"
+
+- name: Fix ownership on install dir
+  ansible.builtin.file:
+    path: "{{ solr_install_dir }}"
+    state: directory
+    owner: "{{ solr_user }}"
+    group: "{{ solr_group }}"
+    recurse: true
+
+- name: Update current symlink
+  ansible.builtin.file:
+    src: "{{ solr_install_dir }}"
+    dest: "{{ solr_current_link }}"
+    state: link
+  notify: Restart solr

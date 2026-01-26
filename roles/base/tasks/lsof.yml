@@ -1,0 +1,13 @@
+- name: install package lsof (Debian family)
+  tags: always
+  apt:
+     name: lsof
+     state: latest 
+  when: ansible_os_family == "Debian"
+
+- name: install package lsof (AlmaLinux family)
+  tags: always
+  dnf: 
+     name: lsof
+     state: latest
+  when: ansible_os_family == "RedHat"

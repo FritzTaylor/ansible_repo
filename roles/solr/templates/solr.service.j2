@@ -1,0 +1,28 @@
+# Managed by Ansible
+[Unit]
+Description=Apache Solr
+After=network.target
+
+[Service]
+Type=simple
+User={{ solr_user }}
+Group={{ solr_group }}
+Environment=SOLR_INCLUDE={{ solr_current_link }}/bin/solr.in.sh
+WorkingDirectory={{ solr_current_link }}
+
+ExecStart={{ solr_current_link }}/bin/solr start -f -p {{ solr_port }} -s {{ solr_home }}
+ExecStop={{ solr_current_link }}/bin/solr stop -p {{ solr_port }}
+
+Restart=on-failure
+RestartSec=5
+LimitNOFILE={{ solr_limit_nofile }}
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths={{ solr_home }} {{ solr_logs_dir }}
+
+[Install]
+WantedBy=multi-user.target
+

@@ -1,0 +1,42 @@
+# roles/solr/tasks/solr_binding.yml
+
+- name: Check candidate solr.in.sh paths
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop: "{{ solr_in_sh_candidates }}"
+  register: solr_in_stats
+
+- name: Pick the first existing solr.in.sh
+  ansible.builtin.set_fact:
+    solr_in_sh_path: >-
+      {{ (solr_in_stats.results
+          | selectattr('stat.exists','equalto',true)
+          | map(attribute='stat.path')
+          | list
+          | first) | default('') }}
+
+- name: Fail if solr.in.sh was not found
+  ansible.builtin.fail:
+    msg: "Could not find solr.in.sh in {{ solr_in_sh_candidates }}. Add the correct path to solr_in_sh_candidates."
+  when: solr_in_sh_path == ""
+
+- name: Ensure Solr binds/advertises on desired host and port
+  ansible.builtin.lineinfile:
+    path: "{{ solr_in_sh_path }}"
+    create: false
+    regexp: '^{{ item.key }}='
+    line: '{{ item.key }}={{ item.value }}'
+  loop:
+    - { key: "SOLR_HOST",       value: "{{ solr_bind_host }}" }
+    - { key: "SOLR_JETTY_HOST", value: "{{ solr_bind_host }}" }
+    - { key: "SOLR_PORT",       value: "{{ solr_port }}" }
+  notify: Restart Solr
+
+- name: (Optional) verify solr is listening on the expected interface/port
+  ansible.builtin.command: "ss -lntp"
+  changed_when: false
+  register: ss_out
+
+- name: Show listener lines for 8983
+  ansible.builtin.debug:
+    msg: "{{ ss_out.stdout_lines | select('search', ':' + (solr_port | string)) | list }}"

@@ -1,0 +1,12 @@
+- name: Update package cache (Debian family)
+  tags: always
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Update package cache (RedHat family)
+  tags: always
+  ansible.builtin.dnf:
+    update_cache: true
+  when: ansible_os_family == "RedHat"

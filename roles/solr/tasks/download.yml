@@ -1,0 +1,14 @@
+#- name: Download Solr tgz (with checksum)
+#  ansible.builtin.get_url:
+#    url: "{{ solr_url }}"
+#    dest: "{{ solr_download_dir }}/{{ solr_filename }}"
+#    checksum: "{{ solr_sha512 }}"
+#    mode: "0644"
+#  when: solr_sha512 is defined and solr_sha512 | length > 0
+- name: Download Solr
+  ansible.builtin.get_url:
+    url: "{{ solr_url }}"
+    dest: "{{ solr_download_dir }}/{{ solr_filename }}"
+    mode: "0644"
+    checksum: "sha512:{{ solr_sha512 }}"
+
