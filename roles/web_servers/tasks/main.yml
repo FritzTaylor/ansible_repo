@@ -1,71 +1,96 @@
-  - name: Install Apache and PHP packages for (Ubuntu Servers)
-    tags: apache2,apache,Ubuntu
-    package:
+ - name: Update apt cache
+   ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+ - name: Install Apache and PHP packages for (Ubuntu Servers)
+   ansible.builtin.apt:
+    name:
+      - "{{ apache_package_name }}"   # apache2
+      - "{{ php_package_name }}"      # php
+    state: present
+
+ - name: Install Apache and PHP packages for (Ubuntu Servers)
+   tags: apache2,apache,Ubuntu
+   package:
       name: 
            - "{{ apache_package_name }}"
            - "{{ php_package_name }}"
       state: latest
-    when: ansible_distribution == "Ubuntu"
+   when: ansible_distribution == "Ubuntu"
  
-  - name: change e-mail address for admin
-    tags: apache,centos,httpd
-    lineinfile: 
+#  - name: Show apache listener output
+#    ansible.builtin.debug:
+#    var: apache_port.stdout
+#  when: apache_port is defined
+ - name: Install Apache and PHP packages for AlmaLinux/CentOS
+   ansible.builtin.dnf:
+      name:
+         - httpd
+         - php
+      state: latest
+   when: ansible_distribution in ["AlmaLinux", "CentOS"]
+
+#  - name: Install Apache and PHP packages for Almalinux Server
+#    dnf:
+#     name:
+#           - httpd
+#           - php
+#     state: latest
+#    when: ansible_distribution == "Almalinux"
+ 
+ - name: change e-mail address for admin
+   tags: apache,centos,httpd
+   lineinfile:
        path: /etc/httpd/conf/httpd.conf
        regexp: '^Serveradmin'
        line: ServerAdmin testingagainlinechangeonansible@homelab.net
-    when: ansible_distribution == "AlmaLinux"
-    notify: restart_apache
-
-  - name: copy default html html files for site
-    tags: apache,apache2,httpd
-    copy:
+   when: ansible_distribution == "AlmaLinux"
+   notify: restart_apache
+ 
+ - name: copy default html html files for site
+   tags: apache,apache2,httpd
+   copy:
       src: default_site.html
       dest: /var/www/html/index.html
-      owner: root 
+      owner: root
       group: root
       mode: 0644
+ 
+ - name: Ensure firewalld is installed (AlmaLinux/CentOS)
+   dnf:
+       name: firewalld
+       state: present
+   when: ansible_distribution in ["AlmaLinux", "CentOS"]
 
-  - name: Install Apache and PHP packages for Almalinux Server
-    dnf:
-     name:
-           - httpd
-           - php
-     state: latest
-    when: ansible_distribution == "Almalinux"
-  
-  - name: Ensure firewalld is installed (AlmaLinux/CentOS)
-    dnf:
-        name: firewalld
-        state: present
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
-
-  - name: Ensure firewalld is running (AlmaLinux/CentOS)
-    service:
+ - name: Ensure firewalld is running (AlmaLinux/CentOS)
+   service:
         name: firewalld
         state: started
         enabled: true
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+   when: ansible_distribution in ["AlmaLinux", "CentOS"]
 
-  - name: Allow HTTP service through firewall (AlmaLinux/CentOS)
-    firewalld:
+ - name: Allow HTTP service through firewall (AlmaLinux/CentOS)
+   firewalld:
         service: http
         permanent: true
         state: enabled
         immediate: true
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+   when: ansible_distribution in ["AlmaLinux", "CentOS"]
 
-  - name: Start and enable Apache (httpd) (AlmaLinux/CentOS)
-    service:
+ - name: Start and enable Apache (httpd) (AlmaLinux/CentOS)
+   service:
         name: httpd
         state: started
         enabled: true
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+   when: ansible_distribution in ["AlmaLinux", "CentOS"]
     
-  - name: Verify Apache is listening on port 80
-    shell: ss -lntp | grep :80
-    register: apache_port
-    changed_when: false
-    when: ansible_distribution in ["AlmaLinux", "CentOS"]
+ - name: Verify Apache is listening on port 80
+   shell: ss -lntp | grep :80
+   register: apache_port
+   changed_when: false
+   when: ansible_distribution in ["AlmaLinux", "CentOS"]
 
-  - debug: 
+ - debug: 
       var: apache_port.stdout
+   when: apache_port.stdout is defined

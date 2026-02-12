@@ -1,42 +1,56 @@
 # roles/solr/tasks/solr_binding.yml
 
-- name: Check candidate solr.in.sh paths
+- name: Find solr.in.sh under common prefixes (auto-discovery)
+  ansible.builtin.find:
+    paths:
+      - /opt
+      - /etc
+      - /var
+      - /usr/local
+    patterns: "solr.in.sh"
+    file_type: file
+    recurse: true
+  register: solr_in_find
+  changed_when: false
+
+- name: Check candidate solr.in.sh paths (if provided)
   ansible.builtin.stat:
     path: "{{ item }}"
-  loop: "{{ solr_in_sh_candidates }}"
+  loop: "{{ solr_in_sh_candidates | default([]) }}"
   register: solr_in_stats
+  when: solr_in_sh_candidates is defined
 
-- name: Pick the first existing solr.in.sh
+- name: Pick solr.in.sh path (prefer candidates, else use auto-discovery)
   ansible.builtin.set_fact:
     solr_in_sh_path: >-
-      {{ (solr_in_stats.results
+      {{
+        (
+          solr_in_stats.results
+          | default([])
           | selectattr('stat.exists','equalto',true)
           | map(attribute='stat.path')
           | list
-          | first) | default('') }}
+          | first
+        )
+        | default(
+            (
+              solr_in_find.files
+              | map(attribute='path')
+              | list
+              | sort
+              | first
+            ),
+            true
+          )
+        | default('')
+      }}
 
 - name: Fail if solr.in.sh was not found
   ansible.builtin.fail:
-    msg: "Could not find solr.in.sh in {{ solr_in_sh_candidates }}. Add the correct path to solr_in_sh_candidates."
+    msg: >-
+      Could not find solr.in.sh.
+      Candidates: {{ solr_in_sh_candidates | default([]) }}.
+      Auto-discovery searched: /opt, /etc, /var, /usr/local and found: {{ solr_in_find.matched }} matches.
+      Install path may differ or Solr is not installed.
   when: solr_in_sh_path == ""
 
-- name: Ensure Solr binds/advertises on desired host and port
-  ansible.builtin.lineinfile:
-    path: "{{ solr_in_sh_path }}"
-    create: false
-    regexp: '^{{ item.key }}='
-    line: '{{ item.key }}={{ item.value }}'
-  loop:
-    - { key: "SOLR_HOST",       value: "{{ solr_bind_host }}" }
-    - { key: "SOLR_JETTY_HOST", value: "{{ solr_bind_host }}" }
-    - { key: "SOLR_PORT",       value: "{{ solr_port }}" }
-  notify: Restart Solr
-
-- name: (Optional) verify solr is listening on the expected interface/port
-  ansible.builtin.command: "ss -lntp"
-  changed_when: false
-  register: ss_out
-
-- name: Show listener lines for 8983
-  ansible.builtin.debug:
-    msg: "{{ ss_out.stdout_lines | select('search', ':' + (solr_port | string)) | list }}"

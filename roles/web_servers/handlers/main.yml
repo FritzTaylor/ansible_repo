@@ -2,3 +2,6 @@
   service: 
    name: "{{ apache_service }}"
    state: restarted
+
+- name: Make sure handlers are flushed immediatly.
+  meta: flush_handlers

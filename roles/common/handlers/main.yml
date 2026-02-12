@@ -1,0 +1,3 @@
+- name: refresh dnf cache
+  ansible.builtin.dnf:
+    update_cache: yes

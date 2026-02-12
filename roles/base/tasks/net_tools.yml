@@ -1,0 +1,13 @@
+- name: install package net-tools (Debian family)
+  tags: always
+  apt:
+     name: net-tools
+     state: latest 
+  when: ansible_os_family == "Debian"
+
+- name: install package net-tools (AlmaLinux family)
+  tags: always
+  dnf: 
+     name: net-tools.x86_64
+     state: latest
+  when: ansible_os_family == "RedHat"

@@ -1,0 +1,38 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: docker
+  options:
+    login_cmd_template: "docker exec -it {instance} bash"
+
+platforms:
+  - name: ubuntu
+    image: geerlingguy/docker-ubuntu2204-ansible:latest
+    pre_build_image: true
+
+provisioner:
+  name: ansible
+  env:
+     ANSIBLE_ROLES_PATH: "${MOLECULE_PROJECT_DIRECTORY}/..:${HOME}/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles"
+  config_options:
+    defaults:
+      remote_tmp: /tmp/.ansible/tmp
+  inventory:
+    host_vars:
+      ubuntu:
+        ansible_user: root
+
+verifier:
+  name: ansible
+
+scenario:
+  test_sequence:
+    - dependency
+    - destroy
+    - syntax
+    - create
+    - converge
+    - idempotence
+    - destroy

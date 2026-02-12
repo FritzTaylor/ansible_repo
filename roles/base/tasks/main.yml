@@ -2,3 +2,19 @@
 - ansible.builtin.import_tasks: ssh.yml
 - ansible.builtin.import_tasks: lsof.yml
 - ansible.builtin.import_tasks: tree.yml
+- ansible.builtin.import_tasks: net_tools.yml
+# roles/base/tasks/main.yml
+
+- name: Gather installed package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Report epel-release status
+  ansible.builtin.debug:
+    msg: "epel-release is installed on this VM"
+  when:
+    - ansible_os_family == "RedHat"
+    - "'epel-release' in ansible_facts.packages"
+
+- import_tasks: epel-release.yml
+- meta: flush_handlers

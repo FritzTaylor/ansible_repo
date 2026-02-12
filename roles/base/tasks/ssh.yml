@@ -1,8 +1,8 @@
-- name: Add SSH key for fat
-  tags: always
-  ansible.builtin.authorized_key:
-    user: fat
-    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQOgHVbk8BNQAKgjQS5AMF3qtCZw+WgFcLNWQCNPCO7 ansible"
+#- name: Add SSH key for fat
+#  tags: always
+#  ansible.builtin.authorized_key:
+#    user: fat
+#    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQOgHVbk8BNQAKgjQS5AMF3qtCZw+WgFcLNWQCNPCO7 ansible"
 
 - name: Generate sshd_config from template
   tags: ssh

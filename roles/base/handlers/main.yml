@@ -2,3 +2,7 @@
   ansible.builtin.service:
     name: "{{ ssh_service_name }}"
     state: restarted
+
+- name: refresh dnf cache
+  ansible.builtin.dnf:
+    update_cache: yes

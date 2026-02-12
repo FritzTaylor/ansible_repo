@@ -1,0 +1,21 @@
+---
+ansible:
+  executor:
+    backend: ansible-playbook
+    args:
+      ansible_playbook:
+        - --inventory=${MOLECULE_PROJECT_DIRECTORY}/inventory.molecule
+        - --extra-vars=molecule_env=test
+  env:
+    ANSIBLE_CONFIG: ${MOLECULE_PROJECT_DIRECTORY}/ansible.cfg
+
+scenario:
+  test_sequence:
+    - syntax
+    - converge
+    - idempotence
+    - verify
+
+verifier:
+  name: ansible
+

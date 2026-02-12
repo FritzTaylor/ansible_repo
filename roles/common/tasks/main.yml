@@ -1,0 +1,7 @@
+- name: Install EPEL
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
+  notify: refresh dnf cache
+
+- meta: flush_handlers

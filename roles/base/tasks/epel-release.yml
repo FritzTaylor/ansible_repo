@@ -1,0 +1,21 @@
+#- name: install epel (AlmaLinux family)
+#  tags: always
+#  ansible.builtin.dnf: 
+#     name: epel-release
+#     state: present
+#  when: ansible_os_family == "RedHat"
+##  notify: refresh dnf cache
+- name: Install epel-release (AlmaLinux family)
+  ansible.builtin.dnf:
+    name: epel-release
+    state: present
+  when: ansible_os_family == "RedHat"
+  register: epel_result
+  notify: refresh dnf cache
+
+- name: Debug whether epel-release changed state
+  ansible.builtin.debug:
+    msg: "epel-release was installed or updated"
+  when:
+    - ansible_os_family == "RedHat"
+    - epel_result.changed

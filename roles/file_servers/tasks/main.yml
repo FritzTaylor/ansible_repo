@@ -1,9 +1,11 @@
 - name: install samba package
   tags: samba
-  package: 
-       name:
-            - samba 
-            - freeipa-client-samba
-            - freeipa-client-epn
-            - freeipa-common
-            - freeipa-healthcheck
+  become: true
+  ansible.builtin.package: 
+     name:
+        - samba 
+        - freeipa-client-samba
+        - freeipa-client-epn
+        - freeipa-common
+        - freeipa-healthcheck
+     state: present

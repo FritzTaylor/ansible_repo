@@ -1,10 +1,15 @@
 ---
-
-
 - hosts: all
   become: true
   tasks:
-   
+  
+  - name: Safety guard - refuse to run unless molecule_env=test
+    ansible.builtin.assert:
+    that:
+      - (molecule_env | default('')) == 'test'
+    fail_msg: "Refusing to run: this run is not marked as test."
+    tags: [always]
+
   - name: update repository index (AlmaLinux)
     tags: always
     dnf:
@@ -20,13 +25,13 @@
     when: ansible_distribution == "Ubuntu"
 
   roles:
-   - base 
- 
+      - base
+
 - hosts: all
   become: true
   roles:
-     - base
-    
+     - users
+
 - hosts: workstations
   become: true
   roles:
@@ -50,4 +55,4 @@
 - hosts: solr_servers
   become: true
   roles:
-     - solr
+    - { role: solr, tags: ["solr"] }

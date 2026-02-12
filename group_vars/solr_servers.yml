@@ -1,0 +1,11 @@
+solr_version: "9.10.1"
+solr_flavor: "slim"
+
+# ONLY the hex part from the .sha512 file
+solr_sha512: "8720f813f1679360f11c753ad516d4680db31afc28065626d2558fb078bd163b79107326733bee3ba6702ca2fa7ef86bd608d594a740b7dcc5475e7c8650cae1"
+
+solr_bind_host: "0.0.0.0"
+solr_port: 8983
+
+solr_xms: "1g"
+solr_xmx: "1g"

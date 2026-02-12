@@ -44,7 +44,7 @@
     tags: always
     authorized_key:
       user: fat
-      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDQOgHVbk8BNQAKgjQS5AMF3qtCZw+WgFcLNWQCNPCO7 ansible"
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIK3TnMC+ZRrDn9mvrwOO6EYUEmPlvgD8bYIdnT2dgnL vagrant@master"
 
   - name: add suders file for fat
     tags: always

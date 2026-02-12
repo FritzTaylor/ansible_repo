@@ -1,0 +1,46 @@
+---
+- name: Validate users variable if present
+  ansible.builtin.assert:
+    that:
+      - users | type_debug == "list"
+    fail_msg: "users must be a list (define it in group_vars)."
+  when: users is defined
+
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    comment: "{{ item.comment | default(omit) }}"
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    groups: "{{ item.groups | default([]) }}"
+    append: true
+    create_home: true
+    state: present
+  loop: "{{ users | default([]) }}"
+
+- name: Ensure .ssh directory exists (secure perms)
+  ansible.builtin.file:
+    path: "/home/{{ item.name }}/.ssh"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: "0700"
+  loop: "{{ users | default([]) }}"
+
+- name: Install SSH authorized key from roles/users/files
+  ansible.builtin.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('file', role_path ~ '/files/' ~ item.ssh_pubkey_file) }}"
+    state: present
+  when: item.ssh_pubkey_file is defined
+  loop: "{{ users | default([]) }}"
+
+- name: Ensure authorized_keys permissions (secure perms)
+  ansible.builtin.file:
+    path: "/home/{{ item.name }}/.ssh/authorized_keys"
+    state: file
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: "0600"
+  when: item.ssh_pubkey_file is defined
+  loop: "{{ users | default([]) }}"
+

@@ -1,8 +1,515 @@
-<html>
-     <title>Testing Website</title>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Amazon Rainforest — Default Landing Page</title>
+  <meta name="description" content="A modern default landing page themed around the Amazon rainforest." />
 
+  <style>
+    :root{
+      --bg: #070b08;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --line: rgba(255,255,255,.12);
+      --radius: 18px;
+      --shadow: 0 12px 40px rgba(0,0,0,.45);
+      --max: 1120px;
+    }
 
-     <body>
-          <p>This is a test site for ansible</p>
-      </body>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 30% -10%, rgba(63, 255, 162, .15), transparent 60%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(67, 135, 255, .12), transparent 55%),
+                  var(--bg);
+      line-height: 1.45;
+    }
+
+    a { color: inherit; }
+    .container{ width: min(100%, var(--max)); margin: 0 auto; padding: 0 20px; }
+
+    /* Top nav */
+    .nav{
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.15));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .nav-inner{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      gap: 14px;
+    }
+    .brand{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-weight: 650;
+      letter-spacing: .2px;
+    }
+    .brand-mark{
+      width: 34px; height: 34px;
+      border-radius: 12px;
+      background: conic-gradient(from 210deg, rgba(63,255,162,.9), rgba(67,135,255,.85), rgba(63,255,162,.9));
+      box-shadow: 0 10px 26px rgba(0,0,0,.45);
+    }
+    .nav-links{
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .nav-links a{
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 12px;
+      transition: background .15s ease, color .15s ease;
+    }
+    .nav-links a:hover{
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+    }
+
+    .btn{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.30);
+      transition: transform .12s ease, background .15s ease, border-color .15s ease;
+      user-select: none;
+    }
+    .btn:hover{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.20);
+      transform: translateY(-1px);
+    }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(63,255,162,.22), rgba(67,135,255,.16));
+      border-color: rgba(63,255,162,.25);
+    }
+
+    /* Hero */
+    .hero{
+      position: relative;
+      min-height: 92vh;
+      display: grid;
+      place-items: center;
+      padding-top: 78px; /* nav offset */
+      overflow: hidden;
+    }
+    .hero-media{
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero-media img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.08) contrast(1.02);
+      transform: scale(1.02);
+    }
+    .hero-overlay{
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        radial-gradient(900px 500px at 20% 20%, rgba(0,0,0,.10), rgba(0,0,0,.55) 70%),
+        linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.70));
+    }
+    .hero-content{
+      position: relative;
+      z-index: 2;
+      width: min(100%, var(--max));
+      padding: 48px 20px 34px;
+    }
+    .badge{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.82);
+      font-size: 13px;
+      backdrop-filter: blur(12px);
+    }
+    .badge-dot{
+      width: 10px; height: 10px; border-radius: 99px;
+      background: rgba(63,255,162,.9);
+      box-shadow: 0 0 0 6px rgba(63,255,162,.15);
+    }
+
+    h1{
+      margin: 18px 0 10px;
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -0.8px;
+      text-shadow: 0 10px 28px rgba(0,0,0,.35);
+    }
+    .subtitle{
+      margin: 0;
+      max-width: 62ch;
+      color: rgba(255,255,255,.82);
+      font-size: clamp(15px, 1.35vw, 18px);
+    }
+    .hero-actions{
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .hero-cards{
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .card{
+      grid-column: span 4;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius);
+      padding: 16px 16px 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .card h3{
+      margin: 0 0 8px;
+      font-size: 15px;
+      letter-spacing: .2px;
+    }
+    .card p{
+      margin: 0;
+      color: rgba(255,255,255,.76);
+      font-size: 14px;
+    }
+
+    /* Sections */
+    main{ padding: 34px 0 60px; }
+    .section{
+      margin-top: 34px;
+      padding: 22px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .grid{
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.1fr .9fr;
+      align-items: center;
+    }
+    .panel{
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .panel h2{
+      margin: 0 0 10px;
+      font-size: 22px;
+      letter-spacing: -0.3px;
+    }
+    .panel p{
+      margin: 0 0 14px;
+      color: rgba(255,255,255,.78);
+    }
+    .list{
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+    .list li{
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.78);
+      font-size: 14px;
+    }
+    .check{
+      width: 18px; height: 18px; border-radius: 6px;
+      background: rgba(63,255,162,.18);
+      border: 1px solid rgba(63,255,162,.25);
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 auto;
+      margin-top: 2px;
+    }
+    .check:before{
+      content: "✓";
+      font-size: 12px;
+      color: rgba(63,255,162,.95);
+      line-height: 1;
+    }
+
+    .media{
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      background: rgba(255,255,255,.03);
+    }
+    .media img{
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    /* Footer */
+    footer{
+      border-top: 1px solid rgba(255,255,255,.10);
+      padding: 26px 0 38px;
+      color: rgba(255,255,255,.68);
+      font-size: 13px;
+    }
+    .foot{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .credit{
+      color: rgba(255,255,255,.62);
+    }
+    .credit a{
+      color: rgba(255,255,255,.78);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(255,255,255,.25);
+    }
+    .credit a:hover{
+      color: rgba(255,255,255,.92);
+      border-bottom-color: rgba(255,255,255,.45);
+    }
+
+    /* Responsive */
+    @media (max-width: 920px){
+      .hero-cards{ grid-template-columns: 1fr; }
+      .card{ grid-column: 1 / -1; }
+      .grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- NAV -->
+  <header class="nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a class="brand" href="#top" aria-label="Homepage">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>Rainforest</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#overview">Overview</a>
+          <a href="#features">Features</a>
+          <a href="#gallery">Gallery</a>
+          <a class="btn primary" href="#get-started">Get started</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="top" class="hero" aria-label="Hero">
+    <div class="hero-media" aria-hidden="true">
+      <!-- High-quality Amazon aerial (3450px wide original). -->
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Aerial_view_of_the_Amazon_Rainforest.jpg"
+        alt=""
+        decoding="async"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content container">
+      <span class="badge">
+        <span class="badge-dot" aria-hidden="true"></span>
+        Amazon rainforest themed default page
+      </span>
+
+      <h1>Protect what protects us.</h1>
+      <p class="subtitle">
+        A modern, responsive landing page template featuring high-resolution rainforest photography,
+        clean typography, and an easy structure you can reuse for any project.
+      </p>
+
+      <div class="hero-actions" id="get-started">
+        <a class="btn primary" href="#overview">Explore sections</a>
+        <a class="btn" href="#gallery">View gallery</a>
+      </div>
+
+      <div class="hero-cards" aria-label="Highlights">
+        <div class="card">
+          <h3>Fast by default</h3>
+          <p>Native HTML/CSS, no framework required. Images are optimized with modern loading behavior.</p>
+        </div>
+        <div class="card">
+          <h3>Accessible layout</h3>
+          <p>Readable contrast, semantic sections, and sensible focus/hover styles.</p>
+        </div>
+        <div class="card">
+          <h3>Easy to customize</h3>
+          <p>Swap photos, edit text, or add your own components without changing the structure.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- OVERVIEW -->
+    <section id="overview" class="section">
+      <div class="grid">
+        <div class="panel">
+          <h2>Overview</h2>
+          <p>
+            The Amazon rainforest is one of Earth’s most biodiverse regions. This page uses high-quality,
+            freely licensed imagery and a simple layout that works well as a “default” homepage.
+          </p>
+          <ul class="list">
+            <li><span class="check" aria-hidden="true"></span>Hero image for immediate visual impact</li>
+            <li><span class="check" aria-hidden="true"></span>Responsive sections with clear hierarchy</li>
+            <li><span class="check" aria-hidden="true"></span>Attribution footer (important for CC-licensed photos)</li>
+          </ul>
+        </div>
+
+        <figure class="media" aria-label="Rainforest canopy photo">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Rainforest_canopy.jpg"
+            alt="Rainforest canopy in Brazil"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="section">
+      <div class="grid">
+        <figure class="media" aria-label="Forest looking upward photo">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Amazon_Lidar_-_42755098211.jpg"
+            alt="Looking up through the Amazon rainforest canopy"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+
+        <div class="panel">
+          <h2>Features</h2>
+          <p>
+            Use these blocks for anything: an IT support portal, a product landing page, or a company homepage.
+          </p>
+          <ul class="list">
+            <li><span class="check" aria-hidden="true"></span>Sticky navigation with blur backdrop</li>
+            <li><span class="check" aria-hidden="true"></span>Reusable cards and panels</li>
+            <li><span class="check" aria-hidden="true"></span>Clean, scalable CSS variables</li>
+          </ul>
+          <div style="margin-top:14px; display:flex; gap:12px; flex-wrap:wrap;">
+            <a class="btn primary" href="#gallery">See more images</a>
+            <a class="btn" href="#top">Back to top</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="section">
+      <div class="panel">
+        <h2>Gallery</h2>
+        <p style="margin-bottom:16px;">
+          Add more cards like these (or swap to your preferred photo set). For heavier sites, host images locally
+          and generate multiple sizes.
+        </p>
+
+        <div style="display:grid; gap:14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+          <figure class="media" style="aspect-ratio: 16/10;">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Aerial_view_of_the_Amazon_Rainforest.jpg"
+              alt="Aerial view of the Amazon rainforest and river"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+
+          <figure class="media" style="aspect-ratio: 16/10;">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Rainforest_canopy.jpg"
+              alt="Rainforest canopy scene"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+
+          <!-- ESA thumbnail is used here because the larger version may be heavy/slow to fetch in some environments -->
+          <figure class="media" style="aspect-ratio: 16/10;">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Amazon_River_ESA22197053.jpeg/1280px-Amazon_River_ESA22197053.jpeg"
+              alt="Satellite view of the Amazon River (ESA/Copernicus Sentinel data)"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container foot">
+      <div class="credit">
+        Photo credits (Wikimedia Commons):
+        <a href="https://commons.wikimedia.org/wiki/File:Aerial_view_of_the_Amazon_Rainforest.jpg">Aerial view of the Amazon Rainforest</a>
+        (CC BY-SA 2.0),
+        <a href="https://commons.wikimedia.org/wiki/File:Rainforest_canopy.jpg">Rainforest canopy</a>
+        (CC BY 2.0),
+        <a href="https://commons.wikimedia.org/wiki/File:Amazon_Lidar_-_42755098211.jpg">Amazon Lidar</a>
+        (CC BY 2.0),
+        <a href="https://commons.wikimedia.org/wiki/File:Amazon_River_ESA22197053.jpeg">Amazon River (ESA)</a>
+        (attribution required).
+      </div>
+      <div style="color: rgba(255,255,255,.55);">
+        © <span id="year"></span> Your Site Name — replace text, links, and sections as needed.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // tiny enhancement
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
 </html>
+
